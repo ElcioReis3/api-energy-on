@@ -12,7 +12,6 @@ import { paymentValidController } from "./controllers/PaymentValidController.js"
 
 import { fastifyMultipart } from "@fastify/multipart";
 import { PrismaClient } from "@prisma/client";
-import { CancelPaymentController } from "./controllers/CancelPaymentController.js";
 import { checkout } from "./controllers/paymentController.js";
 import { ListCobrancesController } from "./controllers/ListCobrancesController.js";
 import { ListMeterController } from "./controllers/ListMeterController.js";
@@ -75,7 +74,4 @@ export async function routes(
   );
   fastify.post("/payment", checkout);
   fastify.register(paymentValidController, { prefix: "/payments" });
-  fastify.post("/cancel-subscription", async (request, reply) => {
-    return new CancelPaymentController().handle(request, reply);
-  });
 }

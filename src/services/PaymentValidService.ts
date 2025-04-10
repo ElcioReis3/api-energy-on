@@ -7,7 +7,7 @@ export class PaymentValidService {
     const existingPayment = await prisma.cobrance.findFirst({
       where: { id: payment_id },
     });
-
+    console.log(payment_id);
     if (existingPayment) {
       throw new Error("Pagamento já registrado.");
     }

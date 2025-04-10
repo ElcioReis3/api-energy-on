@@ -10,7 +10,8 @@ export const createPaymentPreference = async (
   title: string,
   quantity: number,
   price: number,
-  description: string
+  description: string,
+  cobrancaId?: string
 ) => {
   try {
     const paymentId = uuidv4();
@@ -27,11 +28,12 @@ export const createPaymentPreference = async (
         },
       ],
       back_urls: {
-        success: "http://localhost:3000/payments/success",
-        failure: "http://localhost:3000/payments/failure",
-        pending: "http://localhost:3000/payments/pending",
+        success: "https://energy-on-elcioservicos.netlify.app/payments/sucess",
+        failure: "https://energy-on-elcioservicos.netlify.app/payments/failure",
+        pending: "https://energy-on-elcioservicos.netlify.app/payments/pending",
       },
       auto_return: "approved",
+      external_reference: cobrancaId,
     };
 
     // Criar uma preferência de pagamento
