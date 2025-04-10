@@ -6,16 +6,22 @@ class CreateCobranceController {
     async handle(request, reply) {
         const { name, count_meter, meter, currentDate, maturityDate, price, status, } = request.body;
         const cobranceService = new CreateCobranceServices_1.CreateCobranceServices();
-        const cobrance = await cobranceService.execute({
-            name,
-            count_meter,
-            meter,
-            currentDate,
-            maturityDate,
-            price,
-            status,
-        });
-        reply.send(cobrance);
+        try {
+            const cobrance = await cobranceService.execute({
+                name,
+                count_meter,
+                meter,
+                currentDate,
+                maturityDate,
+                price,
+                status,
+            });
+            reply.send(cobrance);
+        }
+        catch (err) {
+            console.error("Erro ao criar cobrança:", err.message);
+            return reply.status(400).send({ message: err.message });
+        }
     }
 }
 exports.CreateCobranceController = CreateCobranceController;

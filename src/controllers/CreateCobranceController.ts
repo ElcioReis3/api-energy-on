@@ -22,18 +22,22 @@ class CreateCobranceController {
     };
 
     const cobranceService = new CreateCobranceServices();
+    try {
+      const cobrance = await cobranceService.execute({
+        name,
+        count_meter,
+        meter,
+        currentDate,
+        maturityDate,
+        price,
+        status,
+      });
 
-    const cobrance = await cobranceService.execute({
-      name,
-      count_meter,
-      meter,
-      currentDate,
-      maturityDate,
-      price,
-      status,
-    });
-
-    reply.send(cobrance);
+      reply.send(cobrance);
+    } catch (err: any) {
+      console.error("Erro ao criar cobrança:", err.message);
+      return reply.status(400).send({ message: err.message });
+    }
   }
 }
 

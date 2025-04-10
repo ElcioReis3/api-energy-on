@@ -15,6 +15,7 @@ import { PrismaClient } from "@prisma/client";
 import { checkout } from "./controllers/paymentController.js";
 import { ListCobrancesController } from "./controllers/ListCobrancesController.js";
 import { ListMeterController } from "./controllers/ListMeterController.js";
+import { CreateCobranceController } from "./controllers/CreateCobranceController.js";
 
 interface Params {
   userId: string;
@@ -54,7 +55,7 @@ export async function routes(
   fastify.post(
     "/create-cobrance",
     async (request: FastifyRequest, reply: FastifyReply) => {
-      return new ListCobrancesController().handle(request, reply);
+      return new CreateCobranceController().handle(request, reply);
     }
   );
   fastify.get(

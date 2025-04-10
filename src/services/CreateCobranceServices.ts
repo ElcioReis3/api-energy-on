@@ -1,4 +1,5 @@
 import prismaClient from "../prisma";
+import { differenceInDays } from "date-fns";
 
 interface CreateCobranceProps {
   name: string;
@@ -21,23 +22,42 @@ class CreateCobranceServices {
     status,
   }: CreateCobranceProps) {
     try {
-      const dataAtual: Date = new Date(currentDate);
+      const ultimaCobranca = await prismaClient.cobrance.findFirst({
+        where: { meter },
+        orderBy: { currentDate: "desc" },
+      });
+      if (ultimaCobranca) {
+        const diferencaEmDias = differenceInDays(
+          new Date(currentDate),
+          new Date(ultimaCobranca.currentDate)
+        );
+
+        console.log("Diferença em dias:", diferencaEmDias);
+
+        if (diferencaEmDias <= 1) {
+          throw new Error(
+            "A nova cobrança deve ter pelo menos 30 dias de diferença da última."
+          );
+        }
+      }
+      const cliente = await prismaClient.client.findFirst({
+        where: { meter },
+      });
+
+      if (!cliente) {
+        throw new Error("Cliente não encontrado.");
+      }
       const newCobrance = await prismaClient.cobrance.create({
         data: {
           name,
           count_meter,
           meter,
-          currentDate: dataAtual,
+          currentDate: new Date(currentDate),
           maturityDate: new Date(maturityDate),
           price,
           status,
         },
       });
-      const cliente = await prismaClient.client.findFirst({ where: { meter } });
-
-      if (!cliente) {
-        throw new Error("Cliente não encontrado.");
-      }
 
       await prismaClient.client.update({
         where: { id: cliente.id },
@@ -45,8 +65,9 @@ class CreateCobranceServices {
       });
 
       return newCobrance;
-    } catch (e: any) {
-      throw new Error("Erro ao criar cobrança.");
+    } catch (err: any) {
+      console.error("Erro ao criar cobrança:", err);
+      throw new Error(err.message);
     }
   }
 }

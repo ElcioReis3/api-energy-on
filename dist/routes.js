@@ -11,6 +11,7 @@ const client_1 = require("@prisma/client");
 const paymentController_js_1 = require("./controllers/paymentController.js");
 const ListCobrancesController_js_1 = require("./controllers/ListCobrancesController.js");
 const ListMeterController_js_1 = require("./controllers/ListMeterController.js");
+const CreateCobranceController_js_1 = require("./controllers/CreateCobranceController.js");
 exports.prisma = new client_1.PrismaClient();
 async function routes(fastify, options) {
     fastify.get("/initial", async (request, reply) => {
@@ -28,7 +29,7 @@ async function routes(fastify, options) {
         return new ListCobrancesController_js_1.ListCobrancesController().handle(request, reply);
     });
     fastify.post("/create-cobrance", async (request, reply) => {
-        return new ListCobrancesController_js_1.ListCobrancesController().handle(request, reply);
+        return new CreateCobranceController_js_1.CreateCobranceController().handle(request, reply);
     });
     fastify.get("/get-client/:meter", async (request, reply) => {
         return new ListMeterController_js_1.ListMeterController().handle(request, reply);
