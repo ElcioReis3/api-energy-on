@@ -51,6 +51,12 @@ export async function routes(
       return new ListCobrancesController().handle(request, reply);
     }
   );
+  fastify.post(
+    "/create-cobrance",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      return new ListCobrancesController().handle(request, reply);
+    }
+  );
   fastify.get(
     "/get-client/:meter",
     async (request: FastifyRequest, reply: FastifyReply) => {

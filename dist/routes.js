@@ -27,6 +27,9 @@ async function routes(fastify, options) {
     fastify.get("/consult-meter", async (request, reply) => {
         return new ListCobrancesController_js_1.ListCobrancesController().handle(request, reply);
     });
+    fastify.post("/create-cobrance", async (request, reply) => {
+        return new ListCobrancesController_js_1.ListCobrancesController().handle(request, reply);
+    });
     fastify.get("/get-client/:meter", async (request, reply) => {
         return new ListMeterController_js_1.ListMeterController().handle(request, reply);
     });
