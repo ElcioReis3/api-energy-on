@@ -8,46 +8,33 @@ exports.paymentValidController = paymentValidController;
 const client_1 = require("@prisma/client");
 const mercadopago_1 = require("mercadopago");
 const mercadopago_2 = __importDefault(require("../config/mercadopago"));
-const PaymentValidService_1 = require("../services/PaymentValidService");
-// Instanciando o Prisma Client
 exports.prisma = new client_1.PrismaClient();
 const paymentInstance = new mercadopago_1.Payment(mercadopago_2.default);
 async function paymentValidController(fastify) {
     // 1️⃣ Salvar pagamento quando o Mercado Pago chamar o webhook
     fastify.post("/webhook", async (request, reply) => {
-        const { id, topic } = request.query;
-        if (topic !== "payment") {
-            return reply.status(200).send("Not a payment event");
+        const { payment_id, status, user_id } = request.body;
+        if (!payment_id || !status || !user_id) {
+            return reply.status(400).send({ error: "Dados inválidos" });
         }
-        try {
-            const response = await paymentInstance.get({ id });
-            const { status, external_reference } = response;
-            if (!external_reference) {
-                return reply.status(400).send({ error: "Sem referência externa" });
-            }
-            const cobranca = await exports.prisma.cobrance.findFirst({
-                where: { idCobrance: external_reference },
+        // Salvar no banco, se ainda não existir
+        await exports.prisma.payment.upsert({
+            where: { payment_id },
+            update: { status },
+            create: {
+                payment_id,
+                status,
+                user_id,
+                used: false,
+            },
+        });
+        if (status === "approved") {
+            await exports.prisma.cobrance.update({
+                where: { id: user_id },
+                data: { status: "PAGO" },
             });
-            if (!cobranca) {
-                return reply.status(404).send({ error: "Cobrança não encontrada" });
-            }
-            if (status === "approved") {
-                // Atualiza status da cobrança
-                await exports.prisma.cobrance.update({
-                    where: { id: cobranca.id },
-                    data: { status: "PAGO" },
-                });
-                // Registra o pagamento na tabela `payment`
-                const paymentService = new PaymentValidService_1.PaymentValidService();
-                await paymentService.registerPayment(id.toString(), status, cobranca.id // supondo que sua cobrança tenha userId
-                );
-            }
-            return reply.send({ message: "Status atualizado com sucesso" });
         }
-        catch (error) {
-            console.error("Erro no webhook:", error);
-            return reply.status(500).send({ error: "Erro interno no webhook" });
-        }
+        return reply.send({ message: "Pagamento registrado" });
     });
     // 2️⃣ Atualizar pagamento para "usado" quando o plano for ativado
     fastify.put("/activate/:payment_id", async (request, reply) => {

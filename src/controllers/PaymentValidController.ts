@@ -4,57 +4,41 @@ import { Payment } from "mercadopago";
 import mercadopago from "../config/mercadopago";
 import { PaymentValidService } from "../services/PaymentValidService";
 
-// Instanciando o Prisma Client
 export const prisma = new PrismaClient();
 const paymentInstance = new Payment(mercadopago);
 
 export async function paymentValidController(fastify: FastifyInstance) {
   // 1️⃣ Salvar pagamento quando o Mercado Pago chamar o webhook
-
   fastify.post("/webhook", async (request, reply) => {
-    const { id, topic } = request.query as { id: string; topic: string };
+    const { payment_id, status, user_id } = request.body as {
+      payment_id: string;
+      status: string;
+      user_id: string;
+    };
 
-    if (topic !== "payment") {
-      return reply.status(200).send("Not a payment event");
+    if (!payment_id || !status || !user_id) {
+      return reply.status(400).send({ error: "Dados inválidos" });
     }
 
-    try {
-      const response = await paymentInstance.get({ id });
-      const { status, external_reference } = response;
-
-      if (!external_reference) {
-        return reply.status(400).send({ error: "Sem referência externa" });
-      }
-
-      const cobranca = await prisma.cobrance.findFirst({
-        where: { idCobrance: external_reference },
+    // Salvar no banco, se ainda não existir
+    await prisma.payment.upsert({
+      where: { payment_id },
+      update: { status },
+      create: {
+        payment_id,
+        status,
+        user_id,
+        used: false,
+      },
+    });
+    if (status === "approved") {
+      await prisma.cobrance.update({
+        where: { id: user_id },
+        data: { status: "PAGO" },
       });
-
-      if (!cobranca) {
-        return reply.status(404).send({ error: "Cobrança não encontrada" });
-      }
-
-      if (status === "approved") {
-        // Atualiza status da cobrança
-        await prisma.cobrance.update({
-          where: { id: cobranca.id },
-          data: { status: "PAGO" },
-        });
-
-        // Registra o pagamento na tabela `payment`
-        const paymentService = new PaymentValidService();
-        await paymentService.registerPayment(
-          id.toString(),
-          status,
-          cobranca.id // supondo que sua cobrança tenha userId
-        );
-      }
-
-      return reply.send({ message: "Status atualizado com sucesso" });
-    } catch (error) {
-      console.error("Erro no webhook:", error);
-      return reply.status(500).send({ error: "Erro interno no webhook" });
     }
+
+    return reply.send({ message: "Pagamento registrado" });
   });
 
   // 2️⃣ Atualizar pagamento para "usado" quando o plano for ativado
