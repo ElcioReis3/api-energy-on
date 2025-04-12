@@ -6,63 +6,45 @@ import mercadopago from "../config/mercadopago";
 
 // Instanciando o Prisma Client
 export const prisma = new PrismaClient();
+const paymentInstance = new Payment(mercadopago);
 
 export async function paymentValidController(fastify: FastifyInstance) {
   // 1️⃣ Salvar pagamento quando o Mercado Pago chamar o webhook
-  fastify.post("/webhook", async (request, reply) => {
-    const { id, type } = request.body as {
-      id: string;
-      type: string;
-    };
 
-    if (type !== "payment") {
-      return reply.status(400).send({ error: "Evento não tratado" });
+  fastify.post("/webhook", async (request, reply) => {
+    const { id, topic } = request.query as { id: string; topic: string };
+
+    if (topic !== "payment") {
+      return reply.status(200).send("Not a payment event");
     }
 
     try {
-      const paymentClient = new Payment(mercadopago);
-      const payment = await paymentClient.get({ id });
+      const response = await paymentInstance.get({ id });
+      const { status, external_reference } = response;
 
-      const { status, external_reference, id: payment_id } = payment;
-
-      if (!external_reference || !payment_id || !status) {
-        return reply
-          .status(400)
-          .send({ error: "Dados incompletos do pagamento" });
+      if (!external_reference) {
+        return reply.status(400).send({ error: "Sem referência externa" });
       }
 
-      // Salvar no banco (upsert)
-      await prisma.payment.upsert({
-        where: { payment_id: String(payment_id) },
-        update: { status },
-        create: {
-          payment_id: String(payment_id),
-          status,
-          user_id: external_reference, // cobrancaId
-          used: false,
-        },
-      });
-
-      // Atualizar status da cobrança
-      const cobrance = await prismaClient.cobrance.findFirst({
+      const cobranca = await prisma.cobrance.findFirst({
         where: { idCobrance: external_reference },
       });
 
-      if (!cobrance) {
+      if (!cobranca) {
         return reply.status(404).send({ error: "Cobrança não encontrada" });
       }
 
       if (status === "approved") {
         await prisma.cobrance.update({
-          where: { id: cobrance.id },
+          where: { id: cobranca.id },
           data: { status: "PAGO" },
         });
       }
 
-      return reply.send({ message: "Pagamento registrado com sucesso" });
+      return reply.send({ message: "Status atualizado com sucesso" });
     } catch (error) {
-      console.error("Erro ao processar webhook:", error);
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+      console.error("Erro no webhook:", error);
+      return reply.status(500).send({ error: "Erro interno no webhook" });
     }
   });
 
