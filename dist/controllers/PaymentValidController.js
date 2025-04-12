@@ -30,6 +30,7 @@ async function paymentValidController(fastify) {
         const cobrance = await prisma_1.default.cobrance.findFirst({
             where: { idCobrance: user_id },
         });
+        console.log("Cobrança", cobrance, "Pagamento", payment_id, "Usuário", user_id);
         if (!cobrance) {
             return reply.status(404).send({ error: "Pagamento não encontrado" });
         }
