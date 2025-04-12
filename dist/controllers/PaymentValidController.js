@@ -8,6 +8,7 @@ exports.paymentValidController = paymentValidController;
 const client_1 = require("@prisma/client");
 const mercadopago_1 = require("mercadopago");
 const mercadopago_2 = __importDefault(require("../config/mercadopago"));
+const PaymentValidService_1 = require("../services/PaymentValidService");
 // Instanciando o Prisma Client
 exports.prisma = new client_1.PrismaClient();
 const paymentInstance = new mercadopago_1.Payment(mercadopago_2.default);
@@ -31,10 +32,15 @@ async function paymentValidController(fastify) {
                 return reply.status(404).send({ error: "Cobrança não encontrada" });
             }
             if (status === "approved") {
+                // Atualiza status da cobrança
                 await exports.prisma.cobrance.update({
                     where: { id: cobranca.id },
                     data: { status: "PAGO" },
                 });
+                // Registra o pagamento na tabela `payment`
+                const paymentService = new PaymentValidService_1.PaymentValidService();
+                await paymentService.registerPayment(id.toString(), status, cobranca.id // supondo que sua cobrança tenha userId
+                );
             }
             return reply.send({ message: "Status atualizado com sucesso" });
         }

@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { PrismaClient } from "@prisma/client";
-import prismaClient from "../prisma";
 import { Payment } from "mercadopago";
 import mercadopago from "../config/mercadopago";
+import { PaymentValidService } from "../services/PaymentValidService";
 
 // Instanciando o Prisma Client
 export const prisma = new PrismaClient();
@@ -35,10 +35,19 @@ export async function paymentValidController(fastify: FastifyInstance) {
       }
 
       if (status === "approved") {
+        // Atualiza status da cobrança
         await prisma.cobrance.update({
           where: { id: cobranca.id },
           data: { status: "PAGO" },
         });
+
+        // Registra o pagamento na tabela `payment`
+        const paymentService = new PaymentValidService();
+        await paymentService.registerPayment(
+          id.toString(),
+          status,
+          cobranca.id // supondo que sua cobrança tenha userId
+        );
       }
 
       return reply.send({ message: "Status atualizado com sucesso" });
