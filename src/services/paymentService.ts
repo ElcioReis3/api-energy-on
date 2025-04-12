@@ -28,9 +28,9 @@ export const createPaymentPreference = async (
         },
       ],
       back_urls: {
-        success: "https://energy-on-elcioservicos.netlify.app/payments/sucess",
-        failure: "https://energy-on-elcioservicos.netlify.app/payments/failure",
-        pending: "https://energy-on-elcioservicos.netlify.app/payments/pending",
+        success: "https://energy-on-elcioservicos.netlify.app/payment-sucess",
+        failure: "https://energy-on-elcioservicos.netlify.app/payment-failure",
+        pending: "https://energy-on-elcioservicos.netlify.app/payment-pending",
       },
       auto_return: "approved",
       external_reference: cobrancaId,
