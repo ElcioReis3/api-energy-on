@@ -7,7 +7,7 @@ exports.CreateCobranceServices = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
 const date_fns_1 = require("date-fns");
 class CreateCobranceServices {
-    async execute({ name, count_meter, meter, currentDate, maturityDate, price, status, }) {
+    async execute({ name, count_meter, meter, currentDate, maturityDate, price, status, idCobrance, }) {
         try {
             const ultimaCobranca = await prisma_1.default.cobrance.findFirst({
                 where: { meter },
@@ -28,6 +28,7 @@ class CreateCobranceServices {
             }
             const newCobrance = await prisma_1.default.cobrance.create({
                 data: {
+                    idCobrance: cliente.id,
                     name,
                     count_meter,
                     meter,

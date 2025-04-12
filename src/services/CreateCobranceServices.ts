@@ -9,6 +9,7 @@ interface CreateCobranceProps {
   meter: string;
   price: number;
   status: "ABERTO" | "VENCIDO" | "PAGO";
+  idCobrance?: string;
 }
 
 class CreateCobranceServices {
@@ -20,6 +21,7 @@ class CreateCobranceServices {
     maturityDate,
     price,
     status,
+    idCobrance,
   }: CreateCobranceProps) {
     try {
       const ultimaCobranca = await prismaClient.cobrance.findFirst({
@@ -49,6 +51,7 @@ class CreateCobranceServices {
       }
       const newCobrance = await prismaClient.cobrance.create({
         data: {
+          idCobrance: cliente.id,
           name,
           count_meter,
           meter,

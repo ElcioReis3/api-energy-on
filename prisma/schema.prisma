@@ -36,6 +36,16 @@ model cobrance {
   maturityDate DateTime
   price Float
   status Status?
+  idCobrance String?
+}
+
+model Payment {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  payment_id String @unique
+  status String
+  user_id String
+  used Boolean @default(false)
+  created_at DateTime? @default(now())
 }
 
 enum Status {

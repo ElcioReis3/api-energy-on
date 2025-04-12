@@ -10,6 +10,7 @@ class CreateCobranceController {
       currentDate,
       maturityDate,
       price,
+      idCobrance,
       status,
     } = request.body as {
       name: string;
@@ -19,6 +20,7 @@ class CreateCobranceController {
       meter: string;
       price: number;
       status: "ABERTO" | "VENCIDO" | "PAGO";
+      idCobrance: string;
     };
 
     const cobranceService = new CreateCobranceServices();
@@ -31,6 +33,7 @@ class CreateCobranceController {
         maturityDate,
         price,
         status,
+        idCobrance,
       });
 
       reply.send(cobrance);
