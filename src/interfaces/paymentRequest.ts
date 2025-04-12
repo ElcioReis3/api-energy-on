@@ -3,4 +3,5 @@ export interface PaymentRequest {
   quantity: number;
   price: number;
   description: string;
+  cobrancaId: string;
 }

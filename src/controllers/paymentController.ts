@@ -7,10 +7,10 @@ export const checkout = async (
   res: FastifyReply
 ) => {
   try {
-    const { title, quantity, price, description } = req.body;
+    const { title, quantity, price, description, cobrancaId } = req.body;
 
     // Verifica se os dados obrigatórios foram fornecidos
-    if (!title || !quantity || !price) {
+    if (!title || !quantity || !price || !cobrancaId) {
       return res.status(400).send({ error: "Dados inválidos" });
     }
 
@@ -19,7 +19,8 @@ export const checkout = async (
       title,
       quantity,
       price,
-      description
+      description,
+      cobrancaId
     );
 
     // Retorna a URL de pagamento gerada
