@@ -7,13 +7,15 @@ exports.ListCustomerServices = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
 class ListCustomerServices {
     async execute(privy, birth) {
-        const client = await prisma_1.default.client.findFirst({
-            where: {
-                privy,
-                birth,
-            },
+        const whereClause = {};
+        if (privy)
+            whereClause.privy = privy;
+        if (birth)
+            whereClause.birth = birth;
+        const clients = await prisma_1.default.client.findMany({
+            where: whereClause,
         });
-        return client;
+        return clients;
     }
 }
 exports.ListCustomerServices = ListCustomerServices;

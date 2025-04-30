@@ -4,7 +4,7 @@ exports.DeleteCustomerController = void 0;
 const DeleteCustomerServices_1 = require("../services/DeleteCustomerServices");
 class DeleteCustomerController {
     async handle(request, reply) {
-        const { id } = request.query;
+        const { id } = request.params;
         const deleteCustomerService = new DeleteCustomerServices_1.DeleteCustomerServices();
         const customer = await deleteCustomerService.execute({
             id,

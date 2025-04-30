@@ -4,18 +4,16 @@ import { ListCustomerServices } from "../services/ListCustomerServices";
 class ListCustomerController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
     const { privy, birth } = request.query as {
-      privy: string;
-      birth: Date;
+      privy?: string;
+      birth?: string;
     };
-    if (!privy || !birth) {
-      return reply.code(400).send("Dados são obrigatórios");
-    }
 
-    const birthDate = new Date(birth);
+    const birthDate = birth ? new Date(birth) : undefined;
+
     const listCustomerServices = new ListCustomerServices();
-    const client = await listCustomerServices.execute(privy, birthDate);
+    const clients = await listCustomerServices.execute(privy, birthDate);
 
-    reply.send({ client });
+    reply.send({ clients });
   }
 }
 

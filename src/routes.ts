@@ -68,7 +68,7 @@ export async function routes(
     return { status: "API is running" };
   });
   fastify.delete(
-    "/delete-client",
+    "/delete-client/:id",
     async (request: FastifyRequest, reply: FastifyReply) => {
       return new DeleteCustomerController().handle(request, reply);
     }
