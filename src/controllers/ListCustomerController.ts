@@ -8,10 +8,14 @@ class ListCustomerController {
       birth?: string;
     };
 
-    const birthDate = birth ? new Date(birth) : undefined;
-
     const listCustomerServices = new ListCustomerServices();
-    const clients = await listCustomerServices.execute(privy, birthDate);
+
+    let clients;
+    if (privy && birth) {
+      clients = await listCustomerServices.execute(privy, new Date(birth));
+    } else {
+      clients = await listCustomerServices.listAll();
+    }
 
     reply.send({ clients });
   }

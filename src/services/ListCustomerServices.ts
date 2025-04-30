@@ -1,17 +1,14 @@
 import prismaClient from "../prisma";
 
 class ListCustomerServices {
-  async execute(privy?: string, birth?: Date) {
-    const whereClause: any = {};
-
-    if (privy) whereClause.privy = privy;
-    if (birth) whereClause.birth = birth;
-
-    const clients = await prismaClient.client.findMany({
-      where: whereClause,
+  async execute(privy: string, birth: Date) {
+    return await prismaClient.client.findFirst({
+      where: { privy, birth },
     });
+  }
 
-    return clients;
+  async listAll() {
+    return await prismaClient.client.findMany();
   }
 }
 
