@@ -10,7 +10,10 @@ const app = fastify({ logger: true });
 // Registro das rotas
 const start = async () => {
   await app.register(routes);
-  await app.register(cors);
+  await app.register(cors, {
+    origin: ["*"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  });
   const PORT = process.env.PORT || 3001;
   try {
     await app.listen({ port: Number(PORT), host: "0.0.0.0" });
