@@ -17,6 +17,11 @@ class DeleteCustomerServices {
     if (!findCustomer) {
       throw new Error("Cliente não existe");
     }
+    await prismaClient.cobrance.deleteMany({
+      where: {
+        idCobrance: findCustomer.id,
+      },
+    });
     await prismaClient.client.delete({
       where: {
         id: findCustomer.id,
