@@ -11,7 +11,7 @@ const app = fastify({ logger: true });
 const start = async () => {
   await app.register(routes);
   await app.register(cors, {
-    origin: ["*"],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
   });
   const PORT = process.env.PORT || 3001;
