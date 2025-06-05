@@ -9,8 +9,6 @@ import { ListCustomerController } from "./controllers/ListCustomerController.js"
 import { DeleteCustomerController } from "./controllers/DeleteCustomerController.js";
 import { UpdateCustomerController } from "./controllers/UpdateCustomerController.js";
 import { paymentValidController } from "./controllers/PaymentValidController.js";
-
-import { fastifyMultipart } from "@fastify/multipart";
 import { PrismaClient } from "@prisma/client";
 import { checkout } from "./controllers/paymentController.js";
 import { ListCobrancesController } from "./controllers/ListCobrancesController.js";

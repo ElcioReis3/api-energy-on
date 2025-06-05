@@ -7,8 +7,6 @@ class ListCustomerController {
       privy?: string;
       birth?: string;
     };
-    console.log(privy);
-    console.log(birth);
     const listCustomerServices = new ListCustomerServices();
 
     let clients;
