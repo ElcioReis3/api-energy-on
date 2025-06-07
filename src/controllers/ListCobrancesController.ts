@@ -4,7 +4,7 @@ import { ListCobrancesServices } from "../services/ListCobrancesServices";
 class ListCobrancesController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
     const { meter } = request.query as {
-      meter: string;
+      meter?: string;
     };
 
     const listCobrancesServices = new ListCobrancesServices();

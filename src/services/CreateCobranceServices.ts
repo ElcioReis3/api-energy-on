@@ -26,15 +26,13 @@ class CreateCobranceServices {
     try {
       const ultimaCobranca = await prismaClient.cobrance.findFirst({
         where: { meter },
-        orderBy: { currentDate: "desc" },
+        orderBy: { maturityDate: "desc" },
       });
       if (ultimaCobranca) {
         const diferencaEmDias = differenceInDays(
           new Date(currentDate),
           new Date(ultimaCobranca.currentDate)
         );
-
-        console.log("Diferença em dias:", diferencaEmDias);
 
         if (diferencaEmDias <= 1) {
           throw new Error(
@@ -55,8 +53,8 @@ class CreateCobranceServices {
           name,
           count_meter,
           meter,
-          currentDate: new Date(currentDate),
-          maturityDate: new Date(maturityDate),
+          currentDate,
+          maturityDate,
           price,
           status,
         },
