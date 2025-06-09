@@ -7,7 +7,7 @@ class ListCobrancesServices {
     const cobrances = await prismaClient.cobrance.findMany({
       where: whereClause,
       orderBy: {
-        maturityDate: "desc",
+        currentDate: "desc",
       },
     });
     return cobrances;

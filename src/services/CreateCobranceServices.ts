@@ -26,7 +26,7 @@ class CreateCobranceServices {
     try {
       const ultimaCobranca = await prismaClient.cobrance.findFirst({
         where: { meter },
-        orderBy: { maturityDate: "desc" },
+        orderBy: { currentDate: "desc" },
       });
       if (ultimaCobranca) {
         const diferencaEmDias = differenceInDays(
