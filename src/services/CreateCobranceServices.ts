@@ -59,10 +59,12 @@ class CreateCobranceServices {
           status,
         },
       });
+      const listUpdateMeter = cliente.count_meter;
+      listUpdateMeter.push(count_meter);
 
       await prismaClient.client.update({
         where: { id: cliente.id },
-        data: { count_meter },
+        data: { count_meter: listUpdateMeter },
       });
 
       return newCobrance;

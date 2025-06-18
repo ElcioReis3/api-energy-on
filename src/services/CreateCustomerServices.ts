@@ -1,5 +1,4 @@
 import prismaClient from "../prisma";
-import bcrypt from "bcrypt";
 
 interface CreateCustomerProps {
   name: string;
@@ -23,6 +22,9 @@ class CreateCustomerServices {
     privy,
     contact,
   }: CreateCustomerProps) {
+    const listCountMeter: number[] = [];
+    listCountMeter.push(count_meter);
+
     if (!name || !email) {
       throw new Error("Preencha todos os campos");
     }
@@ -45,7 +47,7 @@ class CreateCustomerServices {
         email,
         address,
         birth: new Date(birth).toISOString(),
-        count_meter,
+        count_meter: listCountMeter,
         meter,
         privy,
         contact,

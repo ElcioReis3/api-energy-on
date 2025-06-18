@@ -23,7 +23,7 @@ model client {
   meter      String
   address String?
   birth DateTime
-  count_meter Int
+  count_meter Int[]
 }
 
 

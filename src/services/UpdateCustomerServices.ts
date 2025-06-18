@@ -9,7 +9,7 @@ interface UpdateCustomerProps {
   meter: string;
   birth: Date;
   privy: string;
-  count_meter: number;
+  count_meter: number[];
 }
 
 class UpdateCustomerServices {
